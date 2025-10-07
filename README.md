@@ -2,7 +2,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Qosimov Dino</title>
 <style>
 <div style="height: 400px;"></div>
 <footer style="text-align:center; padding: 20px; background:#eee;">
