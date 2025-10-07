@@ -5,7 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Qosimov Dino</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
+<div style="height: 400px;"></div>
+<footer style="text-align:center; padding: 20px; background:#eee;">
+  <p>© 2025 Qosimov Game Studio</p>
+</footer>  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     background: linear-gradient(to top, #87ceeb, #e0f7fa);
     overflow: hidden;
