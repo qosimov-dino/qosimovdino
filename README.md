@@ -50,7 +50,12 @@
   <button id="newGame">Новая игра</button>
 </div>
 
-<canvas id="gameCanvas" width="800" height="300"></canvas>
+canvas {
+  width: 100%;
+  max-height: 400px;
+  display: block;
+  margin: 0 auto;
+}
 
 <script>
 const canvas = document.getElementById('gameCanvas');
