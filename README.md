@@ -1,168 +1,145 @@
-<!DOCTYPE html>
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Qosimov Dino 2.0</title>
+<title>Игра Динозаврик</title>
 <style>
-  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
-    font-family: Arial, sans-serif;
-    background: linear-gradient(to top, #87ceeb, #f0f8ff);
-    overflow-y: auto;
+    margin: 0;
+    background-color: #f0f0f0;
+    overflow: hidden;
+    font-family: sans-serif;
   }
-  canvas {
-    display: block;
-    margin: 40px auto;
-    background: linear-gradient(to top, #f4e1a6 20%, #87ceeb 80%);
-    border: 3px solid #333;
-    border-radius: 10px;
+
+  #gameArea {
+    position: relative;
+    width: 90vw;
+    max-width: 800px;
+    height: 25vh;
+    margin: 5vh auto;
+    background-color: #fff;
+    border: 2px solid #000;
+    overflow: hidden;
   }
-  #ui {
+
+  #dino {
+    position: absolute;
+    bottom: 0;
+    left: 5%;
+    width: 5vw;
+    height: 10vh;
+    background-color: #333;
+  }
+
+  .cactus {
+    position: absolute;
+    bottom: 0;
+    width: 2vw;
+    height: 10vh;
+    background-color: green;
+  }
+
+  #score {
     text-align: center;
-    color: #333;
+    font-size: 4vw;
+    margin-top: 2vh;
   }
-  button {
-    margin-top: 10px;
-    padding: 10px 20px;
-    font-size: 18px;
-    border: none;
-    border-radius: 8px;
-    background: #4caf50;
-    color: white;
-    cursor: pointer;
-    transition: 0.2s;
-  }
-  button:hover { background: #45a049; }
 </style>
 </head>
 <body>
 
-<div id="ui">
-  <h1>🦖 Qosimov Dino</h1>
-  <p>Нажми <b>Пробел</b> или <b>тапни</b> чтобы прыгнуть</p>
-  <p>Счёт: <span id="score">0</span></p>
-  <button id="newGame">Новая игра</button>
+<div id="gameArea">
+  <div id="dino"></div>
 </div>
-
-<canvas id="gameCanvas" width="800" height="300"></canvas>
+<div id="score">Очки: 0</div>
 
 <script>
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-const scoreEl = document.getElementById('score');
-const newGameBtn = document.getElementById('newGame');
+const dino = document.getElementById('dino');
+const gameArea = document.getElementById('gameArea');
+const scoreDisplay = document.getElementById('score');
 
-let dino, obstacles, score, gravity, gameSpeed, gameOver, cloudTimer;
+let isJumping = false;
+let position = 0;
+let score = 0;
+let gameOver = false;
 
-function resetGame() {
-  dino = { x: 50, y: 230, w: 40, h: 40, dy: 0, jumping: false };
-  obstacles = [];
-  clouds = [];
-  score = 0;
-  gravity = 0.8;
-  gameSpeed = 4;
-  gameOver = false;
-  cloudTimer = 0;
-  scoreEl.textContent = score;
+// Прыжок
+function jump() {
+  if (isJumping || gameOver) return;
+  isJumping = true;
+
+  let upInterval = setInterval(() => {
+    if (position >= gameArea.offsetHeight * 0.75) { // высота прыжка относительно экрана
+      clearInterval(upInterval);
+
+      let downInterval = setInterval(() => {
+        if (position <= 0) {
+          clearInterval(downInterval);
+          isJumping = false;
+        }
+        position -= gameArea.offsetHeight * 0.05;
+        dino.style.bottom = position + 'px';
+      }, 20);
+
+    } else {
+      position += gameArea.offsetHeight * 0.05;
+      dino.style.bottom = position + 'px';
+    }
+  }, 20);
 }
 
-function drawDino() {
-  // Тело
-  ctx.fillStyle = '#2e7d32';
-  ctx.fillRect(dino.x, dino.y, dino.w, dino.h);
-  // Глаза
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(dino.x + 8, dino.y + 8, 8, 8);
-}
+document.addEventListener('keydown', (event) => {
+  if (event.code === 'Space' || event.key === 'ArrowUp') jump();
+});
 
-function drawObstacle(ob) {
-  ctx.fillStyle = '#8b4513';
-  ctx.fillRect(ob.x, ob.y, ob.w, ob.h);
-}
+// Генерация кактусов
+let lastCactusTime = 0;
 
-function drawCloud(cloud) {
-  ctx.fillStyle = 'white';
-  ctx.beginPath();
-  ctx.arc(cloud.x, cloud.y, cloud.r, 0, Math.PI * 2);
-  ctx.fill();
-}
-
-function update() {
+function createCactus() {
   if (gameOver) return;
-  ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-  // Небо и земля
-  ctx.fillStyle = '#87ceeb';
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#c2b280';
-  ctx.fillRect(0, 270, canvas.width, 30);
-
-  // Динозавр
-  dino.y += dino.dy;
-  if (dino.y + dino.h < 270) dino.dy += gravity;
-  else { dino.y = 230; dino.dy = 0; dino.jumping = false; }
-  drawDino();
-
-  // Облака
-  cloudTimer++;
-  if (cloudTimer % 150 === 0) {
-    clouds.push({ x: canvas.width, y: 50 + Math.random()*50, r: 20+Math.random()*10 });
-  }
-  for (let i = clouds.length - 1; i >= 0; i--) {
-    clouds[i].x -= 1.5;
-    drawCloud(clouds[i]);
-    if (clouds[i].x + clouds[i].r < 0) clouds.splice(i,1);
-  }
-
-  // Препятствия
-  if (Math.random() < 0.015) {
-    obstacles.push({ x: canvas.width, y: 240, w: 20, h: 30 });
-  }
-  for (let i = obstacles.length - 1; i >= 0; i--) {
-    let ob = obstacles[i];
-    ob.x -= gameSpeed;
-    drawObstacle(ob);
-
-    // Столкновение
-    if (dino.x < ob.x + ob.w &&
-        dino.x + dino.w > ob.x &&
-        dino.y + dino.h > ob.y) {
-      gameOver = true;
-    }
-
-    if (ob.x + ob.w < 0) {
-      obstacles.splice(i, 1);
-      score++;
-      scoreEl.textContent = score;
-      if (score % 5 === 0) gameSpeed += 0.5;
-    }
-  }
-
-  // Game Over
-  if (gameOver) {
-    ctx.fillStyle = '#ff3333';
-    ctx.font = '40px Arial';
-    ctx.fillText('💀 Game Over', 300, 150);
+  const now = Date.now();
+  if (now - lastCactusTime < 1000) { 
+    setTimeout(createCactus, 500);
     return;
   }
+  lastCactusTime = now;
 
-  requestAnimationFrame(update);
+  const cactus = document.createElement('div');
+  cactus.classList.add('cactus');
+  cactus.style.left = gameArea.offsetWidth + 'px';
+  gameArea.appendChild(cactus);
+
+  let cactusInterval = setInterval(() => {
+    let cactusLeft = parseFloat(cactus.style.left);
+
+    // Проверка столкновения
+    if (
+      cactusLeft < dino.offsetLeft + dino.offsetWidth &&
+      cactusLeft + cactus.offsetWidth > dino.offsetLeft &&
+      position < dino.offsetHeight
+    ) {
+      alert('Игра окончена! Очки: ' + score);
+      gameOver = true;
+      clearInterval(cactusInterval);
+      return;
+    }
+
+    if (cactusLeft < -cactus.offsetWidth) {
+      clearInterval(cactusInterval);
+      cactus.remove();
+      score += 1;
+      scoreDisplay.textContent = 'Очки: ' + score;
+    } else {
+      cactus.style.left = cactusLeft - (gameArea.offsetWidth * 0.005) + 'px';
+    }
+
+  }, 20);
+
+  let randomTime = Math.random() * 2000 + 1500;
+  setTimeout(createCactus, randomTime);
 }
 
-function jump() {
-  if (!dino.jumping) {
-    dino.dy = -13;
-    dino.jumping = true;
-  }
-}
-
-document.addEventListener('keydown', e => { if (e.code === 'Space') jump(); });
-canvas.addEventListener('click', jump);
-newGameBtn.addEventListener('click', () => { resetGame(); update(); });
-
-resetGame();
-update();
+createCactus();
 </script>
 
 </body>
