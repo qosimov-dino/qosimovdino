@@ -13,13 +13,13 @@
     font-family: "Segoe UI", sans-serif;
   }
 
-  canvas {
+<canvas {
     display: block;
     margin: 40px auto;
     background: linear-gradient(to top, #f4e1a6 20%, #87ceeb 80%);
     border: 3px solid #333;
     border-radius: 10px;
-  }
+  }></canvas>
 
   #ui {
     text-align: center;
