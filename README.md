@@ -54,7 +54,8 @@ canvas {
   width: 100%;
   max-height: 400px;
   display: block;
-  margin: 0 auto;
+  margin: 20px auto;
+  position: relative;
 }
 
 <script>
