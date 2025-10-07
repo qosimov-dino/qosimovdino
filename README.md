@@ -9,7 +9,7 @@
 </footer>  * { margin: 0; padding: 0; box-sizing: border-box; }
   body {
     background: linear-gradient(to top, #87ceeb, #e0f7fa);
-    overflow: hidden;
+    overflow-y: auto;
     font-family: "Segoe UI", sans-serif;
   }
 
