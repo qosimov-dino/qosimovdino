@@ -161,6 +161,9 @@ newGameBtn.addEventListener('click', () => {
 resetGame();
 update();
 </script>
-
+<div style="height: 200px;"></div>
+<footer style="text-align:center; padding: 20px; background:#eee;">
+  <p>© 2025 Qosimov Game Studio</p>
+</footer>
 </body>
 </html>
