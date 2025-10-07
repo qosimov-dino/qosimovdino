@@ -10,7 +10,14 @@ body { margin:0; background:#f7f7f7; overflow-y:auto; font-family:sans-serif; }
 </style>
 </head>
 <body>
-
+#gameCanvas {
+  display: block;
+  margin: 5vh auto;
+  background: #fff;
+  border: 2px solid #000;
+  width: 90vw;
+  max-height: 50vh; /* важно! */
+}
 <canvas id="gameCanvas"></canvas>
 <div id="score">Очки: 0</div>
 <div id="level">Уровень: 1</div>
